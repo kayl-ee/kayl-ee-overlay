@@ -1,2 +1,2 @@
-gentoo:profiles/default/linux/amd64/23.0/split-usr/musl
+gentoo:default/linux/amd64/23.0/split-usr/musl
 :features/split-usr/musl

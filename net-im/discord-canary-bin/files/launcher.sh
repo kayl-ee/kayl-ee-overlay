@@ -17,4 +17,4 @@ EBUILD_WAYLAND=false
 	--enable-wayland-ime
 )
 
-@@DESTDIR@@/Discord "${discord_parameters[@]}" "$@"
+@@DESTDIR@@/DiscordCanary "${discord_parameters[@]}" "$@"

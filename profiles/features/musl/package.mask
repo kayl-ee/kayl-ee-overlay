@@ -1,5 +1,3 @@
 #requires glibc
-net-im/discord
-net-im/discord-ptb-bin
 net-im/discord-canary-bin
-
+net-im/discord-ptb-bin

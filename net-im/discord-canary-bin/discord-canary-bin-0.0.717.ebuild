@@ -3,8 +3,9 @@
 
 EAPI=8
 
-MY_PN="${PN/-bin/}"
-MY_PV="${PV/-r*/}"
+MY_OPN="DiscordCanary"
+MY_PN="${PN%-bin}"
+MY_PV="${PV%-r*}"
 
 CHROMIUM_LANGS="
 	af am ar bg bn ca cs da de el en-GB en-US es es-419 et fa fi fil fr gu he hi
@@ -16,8 +17,8 @@ inherit chromium-2 desktop linux-info optfeature unpacker xdg
 
 DESCRIPTION="All-in-one voice and text chat for gamers"
 HOMEPAGE="https://discord.com/"
-SRC_URI="https://dl.discordapp.net/apps/linux/${MY_PV}/${MY_PN}-${MY_PV}.tar.gz"
-S="${WORKDIR}/${MY_PN^}"
+SRC_URI="https://dl-canary.discordapp.net/apps/linux/${MY_PV}/${MY_PN}-${MY_PV}.tar.gz"
+S="${WORKDIR}/${MY_PN}-${MY_PV}"
 
 LICENSE="all-rights-reserved"
 SLOT="0"
@@ -65,6 +66,7 @@ CONFIG_CHECK="~USER_NS"
 
 src_unpack() {
 	unpack ${MY_PN}-${MY_PV}.tar.gz
+	mv ${MY_OPN} ${MY_PN}-${MY_PV}
 }
 
 src_configure() {
@@ -82,7 +84,7 @@ src_prepare() {
 	popd >/dev/null || die "location reset for language cleanup failed"
 
 	# fix .desktop exec location
-	sed --in-place --expression "/^Exec=/s:/usr/share/discord/Discord:/usr/bin/${MY_PN}:" \
+	sed --in-place --expression "/^Exec=/s:/usr/share/${MY_PN}/${MY_OPN}:/usr/bin/${MY_PN}:" \
 		"${MY_PN}.desktop" ||
 		die "fixing of exec location on .desktop failed"
 
@@ -104,6 +106,7 @@ src_prepare() {
 }
 
 src_install() {
+	mv "${PN%%-*}.png" "${MY_PN}.png"
 	doicon -s 256 "${MY_PN}.png"
 
 	# install .desktop file
@@ -111,7 +114,7 @@ src_install() {
 
 	exeinto "${DESTDIR}"
 
-	doexe "${MY_PN^}" chrome-sandbox libEGL.so libffmpeg.so libGLESv2.so libvk_swiftshader.so
+	doexe "${MY_OPN}" chrome-sandbox libEGL.so libffmpeg.so libGLESv2.so libvk_swiftshader.so
 
 	insinto "${DESTDIR}"
 	doins chrome_100_percent.pak chrome_200_percent.pak icudtl.dat resources.pak snapshot_blob.bin v8_context_snapshot.bin
@@ -128,11 +131,11 @@ src_install() {
 	[[ -x chrome_crashpad_handler ]] && doins chrome_crashpad_handler
 
 	exeinto "/usr/bin"
-	newexe "${T}/launcher.sh" "discord" || die "failing to install launcher"
+	newexe "${T}/launcher.sh" "${MY_PN}" || die "failing to install launcher"
 
 	# https://bugs.gentoo.org/898912
 	if use appindicator; then
-		dosym ../../usr/lib64/libayatana-appindicator3.so /opt/discord/libappindicator3.so
+		dosym ../../usr/lib64/libayatana-appindicator3.so /opt/${MY_PN}/libappindicator3.so
 	fi
 }
 
